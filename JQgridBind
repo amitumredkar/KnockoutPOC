@@ -1,0 +1,76 @@
+  
+  <link href="../Assets/css/themes/base/minified/jquery-ui.min.css" rel="Stylesheet"
+        type="text/css" />
+    <link href="../Assets/css/jquery.jqgrid/ui.jqgrid.css" rel="Stylesheet" type="text/css" />
+    <link href="../Assets/css/themes/base/jquery.ui.theme.css" rel="Stylesheet" type="text/css" />
+    <script language="javascript" type="text/javascript" src="../Assets/JQuery/jquery-1.9.0.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../Assets/JQuery/jquery-ui-1.10.3.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../Assets/JQuery/i18n/grid.locale-en.js"></script>
+    <script language="javascript" type="text/javascript" src="../Assets/JQuery/jquery.jqGrid.min.js"></script>
+  
+  function BlankData() {
+      var data = [];
+      data.push({ PatientID: null, LabNo: null, TestName: null, DoctorId1: null, DoctorId2: null, PatientDate: null });
+      onGetFieldsSucess(data);
+  }
+        
+  function onGetFieldsSucess(result) {
+            $('#JGRID').jqGrid('GridUnload');
+            $("#JGRID").jqGrid({
+                datastr: result,
+                datatype: 'jsonstring',
+                colNames: ['Action', 'PatientID', 'Test ID', 'Lab No', 'Test Name', 'Doctor Name', 'Doctor Name2', 'Date'],
+                colModel: [
+                { name: 'act', index: 'act', width: 50, sortable: false },
+                { name: 'PatientID', index: 'PatientID', width: 40, align: 'center', sorttype: 'int', searchoptions: { sopt: ['eq', 'ne'] }, hidden: true },
+                { name: 'TestId', index: 'TestId', width: 40, align: 'center', sorttype: 'int', hidden: true },
+                { name: 'LabNo', index: 'LabNo', width: 50, sorttype: "int" },
+                { name: 'PreField1', index: 'PreField1', editable: true, width: 200 },
+                { name: 'DoctorId1', index: 'DoctorId1', width: 120, sorttype: "string" },
+                { name: 'DoctorId2', index: 'DoctorId1', width: 120, sorttype: "string" },
+                { name: 'PatientDate', index: 'PatientDate', width: 120, align: "right", sorttype: "string" }
+                //{ name: 'TestNo', index: 'TestNo', editable: true, width: 130, align: "left", sorttype: "string" }
+                ],
+                multiselect: false,
+                rowNum: 20,
+                height: window.screen.height - 400,
+                width: window.screen.width - 395,
+                rowList: [20, 30, 50, 100],
+                rownumbers: true,
+                pager: jQuery('#gridpager'),
+                sortorder: "desc",
+                viewrecords: true,
+                gridview: true,
+                caption: "Patient List Data",
+
+                gridComplete: function () {
+                    var ids = jQuery("#JGRID").jqGrid('getDataIDs');
+
+                    for (var i = 0; i < ids.length; i++) {
+                        var cl = ids[i];
+                        var RowId = parseInt(ids[i]);
+                        if (jQuery("#JGRID")[0].rows[RowId].childNodes[2].innerText != " ") {
+                            be = "<input style='height:22px;width:40px;' type='button' value='View' onclick=\"CallPatientDetails('" + jQuery("#JGRID")[0].rows[RowId].childNodes[2].innerText + "', '" + jQuery("#JGRID")[0].rows[RowId].childNodes[3].innerText + "');\"  />";
+                            se = "<input style='height:22px;width:20px;' type='button' value='S' onclick=\"jQuery('#JGRID').saveRow('" + cl + "');\"  />";
+                            ce = "<input style='height:22px;width:20px;' type='button' value='C' onclick=\"jQuery('#JGRID').restoreRow('" + cl + "');\" />";
+                            jQuery("#JGRID").jqGrid('setRowData', ids[i], { act: be });
+                        }
+                    }
+                },
+                jsonReader: {
+                    root: "list",
+                    page: "page",
+                    total: "total",
+                    records: "records",
+                    repeatitems: false,
+                    cell: "cell",
+                    id: "id",
+                    userdata: "userdata"
+                }
+            });
+
+            $("#JGRID").jqGrid('navGrid', "#gridpager", { edit: false, add: false, del: false });
+            $("#JGRID").jqGrid('inlineNav', "#gridpager");
+
+            //$("#JGRID").find('th input[type="checkbox"]').hide();
+        }
